@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Product;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ApiProductController extends Controller
@@ -12,10 +13,14 @@ class ApiProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        // $data = Product::all();
-        // return $this->onSuccess('Product', $data, 'Founded');
+        $query = Product::query();
+        if($request->get('name') && $request->get('name') != null) {
+            $data = $query->where('name', 'LIKE', '%'.$request->get('name').'%');
+        }
+        $data = $query->get();
+        return response()->json($data);
     }
 
     /**
