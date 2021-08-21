@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Product;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,10 +14,14 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        // $data = Product::all();
-        // return Inertia::render('Admin/Product/Index', ['data' => $data]);
+        $query = Product::query();
+        if($request->get('name') && $request->get('name') != null) {
+            $data = $query->where('name', 'LIKE', '%'.$request->get('name').'%');
+        }
+        $data = $query->get();
+        return Inertia::render('Admin/Product/Index', ['products' => $data]);
     }
 
     /**
@@ -26,7 +31,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Admin/Product/Create');
     }
 
     /**
@@ -37,11 +42,8 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        // $validation = $request->validate([
-        //     'name' => 'required',
-        // ]);
-        // $store = Product::create($request->all());
-        // return redirect()->back();
+        $data = Product::create($request->except('_method', '_token'));
+        return redirect()->route('product.index')->with('status', 'Berhasil');
     }
 
     /**
@@ -63,7 +65,8 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        //
+        $data = Product::find($id);
+        return Inertia::render('Admin/Product/Edit', ['product' => $data]);
     }
 
     /**
@@ -75,7 +78,8 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = Product::where('id', $id)->update($request->except('_method', '_token'));
+        return redirect()->route('product.index')->with('status', 'Berhasil');
     }
 
     /**
@@ -86,6 +90,7 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $data = Product::destroy($id);
+        return redirect()->route('product.index')->with('status', 'Berhasil');
     }
 }
