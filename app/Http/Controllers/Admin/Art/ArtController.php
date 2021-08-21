@@ -1,26 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Product;
+namespace App\Http\Controllers\Admin\Art;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
 use Illuminate\Http\Request;
 
-class ApiProductController extends Controller
+class ArtController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $query = Product::query();
-        if($request->get('name') && $request->get('name') != null) {
-            $data = $query->where('name', 'LIKE', '%'.$request->get('name').'%');
-        }
-        $data = $query->get();
-        return response()->json($data);
+        //
     }
 
     /**
