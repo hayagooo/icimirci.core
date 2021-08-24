@@ -17,8 +17,8 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $query = Product::query();
-        if($request->get('name') && $request->get('name') != null) {
-            $data = $query->where('name', 'LIKE', '%'.$request->get('name').'%');
+        if ($request->get('name') && $request->get('name') != null) {
+            $data = $query->where('name', 'LIKE', '%' . $request->get('name') . '%');
         }
         $data = $query->get();
         return Inertia::render('Admin/Product/Index', ['products' => $data]);
