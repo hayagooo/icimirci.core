@@ -5,17 +5,21 @@ namespace App\Http\Controllers\Admin\Art;
 use App\Http\Controllers\Controller;
 use App\Models\Art;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\File;
 
-class ArtController extends Controller
+
+class ApiArtController extends Controller
 {
+    public $data;
     public $path;
+    public $dataType;
     public $dimen;
 
-    public function __construct()
+    public function __construct(Art $data)
     {
+        $this->data = $data;
+        $this->dataType = 'Art';
         $this->path = public_path() . '/image/art/';
         $this->dimen = 750;
     }
@@ -25,14 +29,10 @@ class ArtController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $query = Art::query();
-        if ($request->get('title') && $request->get('title') != null) {
-            $arts = $query->where('title', 'LIKE', '%' . $request->get('title') . '%');
-        }
-        $arts = $query->get();
-        return Inertia::render('Admin/Art/Index', compact('arts'));
+        $data = Art::all();
+        return $this->onSuccess('Product', $data, 'Founded');
     }
 
     /**
@@ -42,7 +42,7 @@ class ArtController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/Art/Create');
+        //
     }
 
     /**
@@ -53,12 +53,6 @@ class ArtController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => ['required', 'max:20'],
-            'description' => ['required', 'max:50'],
-            'picture' => 'required|image|mimes:jpg,png,jpeg|max:4048'
-        ]);
-
         $data = new Art();
         $data->title = $request->title;
         $data->description = $request->description;
@@ -75,7 +69,7 @@ class ArtController extends Controller
         $pictureImg->save($this->path . $pictureName);
         $data->picture = $pictureName;
         $data->save();
-        return redirect()->route('art.index')->with('status', 'Berhasil');
+        return $this->onSuccess($this->dataType, $data, 'Created');
     }
 
     /**
@@ -97,8 +91,8 @@ class ArtController extends Controller
      */
     public function edit($id)
     {
-        $art = Art::find($id);
-        return Inertia::render('Admin/Art/Edit', compact('art'));
+        $data = Art::find($id);
+        return $this->onSuccess($this->dataType, $data, 'Founded');
     }
 
     /**
@@ -109,19 +103,10 @@ class ArtController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-
     {
-        $request->validate([
-            'title' => ['required', 'max:20'],
-            'description' => ['required', 'max:50'],
-        ]);
-
         $data = Art::find($id);
 
         if (isset($request->picture)) {
-            $request->validate([
-                'picture' => 'required|image|mimes:jpg,png,jpeg|max:4048'
-            ]);
             unlink($this->path . $data->picture);
             $picture = $request->file('picture');
             $pictureName = 'picture_' . $request->title . '_' . uniqid() . '.' . $picture->extension();
@@ -138,7 +123,7 @@ class ArtController extends Controller
         $data->title = $request->title;
         $data->description = $request->description;
         $data->save();
-        return redirect()->route('art.index')->with('status', 'Berhasil');
+        return $this->onSuccess($this->dataType, $data, 'Update');
     }
 
     /**
@@ -149,7 +134,11 @@ class ArtController extends Controller
      */
     public function destroy($id)
     {
-        Art::destroy($id);
-        return redirect()->route('art.index')->with('status', 'Berhasil');
+        $data = Art::find($id);
+        if (File::exists($this->path . $data->picture)) {
+            unlink($this->path . $data->picture);
+        }
+        $data->delete();
+        return $this->onSuccess($this->dataType, $data, 'Destroyed');
     }
 }

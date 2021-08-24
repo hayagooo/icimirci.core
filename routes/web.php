@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Art\ArtController;
 use App\Http\Controllers\Admin\Product\ProductController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,7 @@ Route::get('/', function () {
 });
 
 Route::resource('product', ProductController::class);
+Route::resource('art', ArtController::class);
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return Inertia::render('Dashboard');
