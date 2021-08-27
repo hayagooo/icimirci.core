@@ -177,7 +177,9 @@ return [
         App\Providers\FortifyServiceProvider::class,
         App\Providers\JetstreamServiceProvider::class,
 
-        Intervention\Image\Facades\Image::class
+        Intervention\Image\ImageServiceProvider::class
+
+        // pasti kenek iki.. lek gak kenek aneh laptopmu..
 
     ],
 
