@@ -6,9 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\File;
+use Intervention\Image\Facades\Image;
 
 class ProductController extends Controller
 {
+    public $path;
+    public $dimen;
+
+    public function __construct()
+    {
+        $this->path = public_path() . '/image/product/';
+        $this->dimen = 750;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -42,7 +52,28 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $data = Product::create($request->except('_method', '_token'));
+        $request->validate([
+            'name' => ['required', 'max:20'],
+            'description' => ['required', 'max:50'],
+            'image' => 'required|image|mimes:jpg,png,jpeg|max:4048'
+        ]);
+
+        $data = new Product();
+        $data->name = $request->name;
+        $data->description = $request->description;
+        // make new picture
+        $image = $request->file('image');
+        $pictureName = 'image_' . $request->name . '_' . uniqid() . '.' . $image->extension();
+        $pictureImg = Image::make($image->path());
+        $pictureImg->resize($this->dimen, $this->dimen, function ($constraint) {
+            $constraint->aspectRatio();
+        });
+        if (!File::isDirectory($this->path)) {
+            File::makeDirectory($this->path, 0777, true, true);
+        }
+        $pictureImg->save($this->path . $pictureName);
+        $data->image = $pictureName;
+        $data->save();
         return redirect()->route('product.index')->with('status', 'Berhasil');
     }
 
@@ -78,7 +109,33 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = Product::where('id', $id)->update($request->except('_method', '_token'));
+        $request->validate([
+            'name' => ['required', 'max:20'],
+            'description' => ['required', 'max:50'],
+        ]);
+
+        $data = Product::find($id);
+
+        if (isset($request->image)) {
+            $request->validate([
+                'image' => 'required|image|mimes:jpg,png,jpeg|max:4048'
+            ]);
+            unlink($this->path . $data->image);
+            $image = $request->file('image');
+            $pictureName = 'image_' . $request->name . '_' . uniqid() . '.' . $image->extension();
+            $pictureImg = Image::make($image->path());
+            $pictureImg->resize($this->dimen, $this->dimen, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+            if (!File::isDirectory($this->path)) {
+                File::makeDirectory($this->path, 0777, true, true);
+            }
+            $pictureImg->save($this->path . $pictureName);
+            $data->image = $pictureName;
+        }
+        $data->name = $request->name;
+        $data->description = $request->description;
+        $data->save();
         return redirect()->route('product.index')->with('status', 'Berhasil');
     }
 
