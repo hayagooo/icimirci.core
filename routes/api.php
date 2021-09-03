@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Product\ApiProductController;
+use App\Http\Controllers\Admin\Product\ApiCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,4 +20,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::resource('product', ApiProductController::class);
+Route::resource('category', ApiCategoryController::class);
 
