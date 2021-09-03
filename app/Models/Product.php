@@ -11,5 +11,10 @@ class Product extends Model
 
     protected $table = 'products';
 
-    protected $fillable = ['name', 'image', 'description'];
+    protected $fillable = ['name', 'image', 'description', 'category_id'];
+
+    public function category_product(){
+        // kebalik. iki seharuse belongsto
+        return $this->belongsTo(Category_product::class);
+    }
 }

@@ -8,6 +8,7 @@ use App\Models\Product;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\File;
 use Inertia\Inertia;
+use App\Http\Controllers\Resources\ProductResource;
 
 class ApiProductController extends Controller
 {
@@ -55,6 +56,8 @@ class ApiProductController extends Controller
         $data = new Product();
         $data->name = $request->name;
         $data->description = $request->description;
+        $data->category_id = $request->category_id;
+
         // make new picture
         $image = $request->file('image');
         $pictureName = 'image_' . $request->name . '_' . uniqid() . '.' . $image->extension();
@@ -105,8 +108,6 @@ class ApiProductController extends Controller
     {
         $data = Product::find($id);
 
-        $data->name = $request->name;
-        $data->description = $request->description;
         if (isset($request->image)) {
             unlink($this->path . $data->image);
             $image = $request->file('image');
@@ -121,6 +122,10 @@ class ApiProductController extends Controller
             $pictureImg->save($this->path . $pictureName);
             $data->image = $pictureName;
         }
+        $data->name = $request->name;
+        $data->description = $request->description;
+        $data->category_id = $request->category_id;
+
         $data->save();
         return $this->onSuccess($this->dataType, $data, 'Update');
     }

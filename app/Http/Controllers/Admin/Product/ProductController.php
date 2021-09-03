@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Product;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Category_product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\File;
@@ -41,7 +42,9 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/Product/Create');
+        $query = Category_product::query();
+        $data = $query->get();
+        return Inertia::render('Admin/Product/Create', ['category_product' => $data]);
     }
 
     /**
@@ -55,12 +58,14 @@ class ProductController extends Controller
         $request->validate([
             'name' => ['required', 'max:20'],
             'description' => ['required', 'max:50'],
-            'image' => 'required|image|mimes:jpg,png,jpeg|max:4048'
+            'image' => 'required|image|mimes:jpg,png,jpeg|max:4048',
+            'category_id' => ['required']
         ]);
 
         $data = new Product();
         $data->name = $request->name;
         $data->description = $request->description;
+        $data->category_id = $request->category_id;
         // make new picture
         $image = $request->file('image');
         $pictureName = 'image_' . $request->name . '_' . uniqid() . '.' . $image->extension();
@@ -97,7 +102,9 @@ class ProductController extends Controller
     public function edit($id)
     {
         $data = Product::find($id);
-        return Inertia::render('Admin/Product/Edit', ['product' => $data]);
+        $query = Category_product::query();
+        $categoryData = $query->get();
+        return Inertia::render('Admin/Product/Edit', ['product' => $data, 'category_product' => $categoryData]);
     }
 
     /**
@@ -112,6 +119,7 @@ class ProductController extends Controller
         $request->validate([
             'name' => ['required', 'max:20'],
             'description' => ['required', 'max:50'],
+            'category_id' => ['required'],
         ]);
 
         $data = Product::find($id);
@@ -135,6 +143,7 @@ class ProductController extends Controller
         }
         $data->name = $request->name;
         $data->description = $request->description;
+        $data->category_id = $request->category_id;
         $data->save();
         return redirect()->route('product.index')->with('status', 'Berhasil');
     }

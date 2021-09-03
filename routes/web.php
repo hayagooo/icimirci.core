@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Art\ArtController;
 use App\Http\Controllers\Admin\Product\ProductController;
+use App\Http\Controllers\Admin\Product\CategoryController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -28,6 +29,7 @@ Route::get('/', function () {
 
 Route::resource('product', ProductController::class);
 Route::resource('art', ArtController::class);
+Route::resource('category', CategoryController::class);
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return Inertia::render('Dashboard');
