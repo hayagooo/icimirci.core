@@ -1,8 +1,9 @@
 <template>
     <div>
-        <input type="text" placeholder="Name" v-model="input.name">
-        <input type="text" placeholder="Deskripsi" v-model="input.description">
-        <button @click="onSubmit()" class="p-4 bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500">
+        <input type="text" placeholder="Name" v-model="form.name">
+        <input type="text" placeholder="Deskripsi" v-model="form.description">
+        <input type="file" @input="form.image = $event.target.files[0]" @change="upload($event.target.files[0])" /> 
+        <button @click="submit(product.id)" class="p-4 bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500">
             Update
         </button>
     </div>
@@ -12,33 +13,31 @@
 import {Inertia} from '@inertiajs/inertia'
 export default {
     props: ['product'],
-    data() {
-        return {
-            input: {
-                name: '',
-                description: '',
-            }
-        }
-    },
-    // function di load
-    mounted() {
+    mounted(){
         this.getData()
     },
-    // function setelah di load
-    created() {
-
+    data() {
+        return {
+            form: {
+                name: null,
+                description: null,
+                image: null,
+                _method: 'PATCH'
+            },
+            previewImg: '',
+        }
     },
     methods: {
-        getData() {
-            this.input.name = this.product.name
-            this.input.description = this.product.description
+        upload: function(data){
+            this.previewImg = URL.createObjectURL(data)
         },
-        onSubmit() {
-            let formData = new FormData()
-            formData.append('name', this.input.name)
-            formData.append('description', this.input.description)
-            formData.append('_method', 'PATCH')
-            Inertia.post(route('product.update', this.product.id), formData)
+        getData() {
+            this.form.name = this.product.name
+            this.form.description = this.product.description
+            this.previewImg = '/image/product/' + this.product.image
+        },
+        submit: function(id){
+            Inertia.post(route('product.update', id), this.form)
         }
     }
 }

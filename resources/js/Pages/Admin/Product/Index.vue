@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <dashboard-page>
         <h1>Product</h1>
         <button type="button" @click="createData()" class="p-4 bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500">Tambah produk</button>
         <input type="text" v-model="input.name" @keyup="search()">
@@ -9,6 +9,7 @@
             <button class="bg-green-500 p-4" type="button" @click="editData(item.id)">Edit</button>
             <button class="bg-red-500 p-4" type="button" @click="ondelete.status = true, ondelete.id = item.id">Delete</button>
         </div>
+
         <!-- modal -->
         <div v-if="ondelete.status" class="min-w-screen h-screen animated fadeIn faster  fixed  left-0 top-0 flex justify-center items-center inset-0 z-50 outline-none focus:outline-none bg-no-repeat bg-center bg-cover" id="modal-id">
             <div class="absolute bg-black opacity-80 inset-0 z-0"></div>
@@ -37,10 +38,11 @@
             </div>
             </div>
         </div>
-    </div>
+    </dashboard-page>
 </template>
 
 <script>
+import DashboardPage from '@/Layouts/DahboardPage'
 import { Inertia } from '@inertiajs/inertia'
 export default {
     props: ['products'],
@@ -54,6 +56,9 @@ export default {
                 name: ''
             }
         }
+    },
+    components: {
+        DashboardPage
     },
     methods: {
         search() {
