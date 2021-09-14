@@ -14,9 +14,14 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        
+        $query = Category_product::query();
+        if ($request->get('category') && $request->get('category') != null) {
+            $data = $query->where('category', 'LIKE', '%' . $request->get('category') . '%');
+        }
+        $data = $query->get();
+        return Inertia::render('Admin/Product/Category/Index', ['category_product' => $data]);
     }
 
     /**
@@ -38,12 +43,14 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'category' => ['required', 'max:20']
+            'category' => ['required', 'max:20'],
+            'description' => ['required', 'max:50']
         ]);
         $data = new Category_product();
         $data->category = $request->category;
+        $data->description = $request->description;
         $data->save();
-        return redirect()->route('product.index')->with('status', 'berhasil');
+        return redirect()->route('category.index')->with('status', 'berhasil');
     }
 
     /**
@@ -78,7 +85,11 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = Category_product::find($id);
+        $data->category = $request->category;
+        $data->description = $request->description;
+        $data->save();
+        return redirect()->route('category.index')->with('status', 'Berhasil');
     }
 
     /**
@@ -90,6 +101,6 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         $data = Category_product::destroy($id);
-        return redirect()->route('product.index')->with('status', 'Berhasil');
+        return redirect()->route('category.index')->with('status', 'Berhasil');
     }
 }

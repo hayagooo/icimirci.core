@@ -1,16 +1,14 @@
 <template>
     <div>
-        <h1>Product</h1>
+        <h1>Category</h1>
         <button type="button" @click="createData()" class="p-4 bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500">Tambah produk</button>
-        <input type="text" v-model="input.name" @keyup="search()">
-        <div :key="index" v-for="item, index in products">
-            <h2 class="text-2xl font-bold">{{ item.name }}</h2>
+        <input type="text" v-model="input.category" @keyup="search()">
+        <div :key="index" v-for="item, index in category_product">
+            <h2 class="text-2xl font-bold">{{ item.category }}</h2>
             <p>{{ item.description }}</p>
             <button class="bg-green-500 p-4" type="button" @click="editData(item.id)">Edit</button>
             <button class="bg-red-500 p-4" type="button" @click="ondelete.status = true, ondelete.id = item.id">Delete</button>
         </div>
-        <button type="button" @click="category()" class="p-4 bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500"> Category </button>
-
         <div class="col-span-6 sm:col-span-3">
         </div>
         <!-- modal -->
@@ -47,7 +45,7 @@
 <script>
 import { Inertia } from '@inertiajs/inertia'
 export default {
-    props: ['products'],
+    props: ['category_product'],
     data() {
         return {
             ondelete: {
@@ -55,33 +53,30 @@ export default {
                 id: null
             },
             input: {
-                name: ''
+                category: ''
             }
         }
     },
     created(){
-        console.log(this.products)
+        console.log(this.category_product)
     },
     methods: {
         search() {
-            Inertia.get(route('product.index'), {
-                name: this.input.name
+            Inertia.get(route('category.index'), {
+                category: this.input.category
             }, { preserveState: true })
         },
         createData() {
-            Inertia.get(route('product.create'))
+            Inertia.get(route('category.create'))
         },
         editData(id) {
             console.log('edit')
-            Inertia.get(route('product.edit', id))
+            Inertia.get(route('category.edit', id))
         },
         deleteData(id) {
-            Inertia.delete(route('product.destroy', id))
+            Inertia.delete(route('category.destroy', id))
             this.ondelete.status = false
             this.ondelete.id = null
-        },
-        category() {
-            Inertia.get(route('category.index'))  
         },
     }
 }

@@ -1,6 +1,7 @@
 <template>
     <div>
         <input type="text" placeholder="Nama Category" v-model="form.category">
+        <textarea placeholder="Nama Category" v-model="form.description"></textarea>
         <button @click="submit()" class="p-4 bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500">
             Submit
         </button>

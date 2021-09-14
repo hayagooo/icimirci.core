@@ -11,7 +11,7 @@ class Category_product extends Model
 
     protected $table = 'category_product';
 
-    protected $fillable = ['category'];
+    protected $fillable = ['category', 'description'];
 
     public function product(){
         // yang iki hasMany.

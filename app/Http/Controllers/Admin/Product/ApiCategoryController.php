@@ -46,10 +46,12 @@ class ApiCategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'category' => ['required', 'max:20']
+            'category' => ['required', 'max:20'],
+            'description' => ['required', 'mas:50']
         ]);
         $data = new Category_product();
         $data->category = $request->category;
+        $data->description = $request->description;
         $data->save();
         return $this->onSuccess($this->dataType, $data, 'created');
     }
@@ -88,6 +90,7 @@ class ApiCategoryController extends Controller
         //
         $data = Category_product::find($id);
         $data->category = $request->category;
+        $data->description = $request->description;
         $data->save();
         return $this->onSuccess($this->dataType, $data, 'updated');
     }
